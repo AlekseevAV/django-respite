@@ -1,6 +1,6 @@
 from setuptools import setup
 
-execfile('respite/version.py')
+exec(compile(open('respite/version.py', "rb").read(), 'respite/version.py', 'exec'))
 
 setup(
     name = 'django-respite',
