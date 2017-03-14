@@ -1,2 +1,2 @@
-from views import Views
-from resource import Resource
+from .views import Views
+from .resource import Resource

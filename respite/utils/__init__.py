@@ -1,6 +1,6 @@
 from django import forms
 
-from parsers import *
+from .parsers import *
 
 def generate_form(model, form=None, fields=False, exclude=False):
     """
