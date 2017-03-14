@@ -1,14 +1,16 @@
 import re
 import json
 
-from urllib import urlencode
+from urllib.parse import urlencode
 
 from django.http import QueryDict
+from django.utils.deprecation import MiddlewareMixin
 
 from respite.utils import parse_content_type, parse_multipart_data
 from respite.utils.datastructures import NestedQueryDict
 
-class HttpMethodOverrideMiddleware:
+
+class HttpMethodOverrideMiddleware(MiddlewareMixin):
     """
     Facilitate for overriding the HTTP method with the X-HTTP-Method-Override
     header or a '_method' HTTP POST parameter.
@@ -16,7 +18,7 @@ class HttpMethodOverrideMiddleware:
 
     def process_request(self, request):
         # In the interest of keeping the request pristine, we discard the "_method" key.
-        request._body = re.sub(r'_method=(GET|POST|PUT|PATCH|DELETE|OPTIONS)&?', '', request.body)
+        request._body = re.sub(r'_method=(GET|POST|PUT|PATCH|DELETE|OPTIONS)&?', '', request.body.decode())
 
         if 'HTTP_X_HTTP_METHOD_OVERRIDE' in request.META \
         or '_method' in request.POST:
@@ -32,7 +34,8 @@ class HttpMethodOverrideMiddleware:
 
             request.POST = QueryDict('')
 
-class HttpPutMiddleware:
+
+class HttpPutMiddleware(MiddlewareMixin):
     """
     Facilitate for HTTP PUT in the same way Django facilitates for HTTP GET
     and HTTP POST; populate a QueryDict instance with the request body in request.PUT.
@@ -46,7 +49,8 @@ class HttpPutMiddleware:
             else:
                 request.PUT = QueryDict(request.body)
 
-class HttpPatchMiddleware:
+
+class HttpPatchMiddleware(MiddlewareMixin):
     """
     Facilitate for HTTP PATCH in the same way Django facilitates for HTTP GET
     and HTTP POST; populate a QueryDict instance with the request body in request.PATCH.
@@ -60,7 +64,8 @@ class HttpPatchMiddleware:
             else:
                 request.PATCH = QueryDict(request.body)
 
-class JsonMiddleware:
+
+class JsonMiddleware(MiddlewareMixin):
     """
     Parse JSON in POST, PUT and PATCH requests.
     """
